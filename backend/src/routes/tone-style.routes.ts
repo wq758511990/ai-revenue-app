@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import toneStyleController from '../controllers/tone-style.controller';
 
-const router = Router();
+const router: Router = Router();
 
 // 获取所有情绪风格
 router.get('/', toneStyleController.getAll.bind(toneStyleController));

@@ -13,7 +13,7 @@ import {
 } from '../controllers/feedback.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
 
-const router = Router();
+const router: Router = Router();
 
 // 所有反馈接口都需要认证
 router.use(authMiddleware);

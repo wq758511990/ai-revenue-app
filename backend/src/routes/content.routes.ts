@@ -3,7 +3,7 @@ import contentController from '../controllers/content.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { quotaMiddleware } from '../middleware/quota.middleware';
 
-const router = Router();
+const router: Router = Router();
 
 // 所有内容相关接口都需要认证
 router.use(authMiddleware);

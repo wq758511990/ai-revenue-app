@@ -6,7 +6,7 @@ import { Router } from 'express';
 import userController from '../controllers/user.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
 
-const router = Router();
+const router: Router = Router();
 
 // 所有用户接口都需要认证
 router.use(authMiddleware);
