@@ -59,9 +59,9 @@
             {{ quotaStore.dailyRemaining }}
           </text>
           <view class="stat-label-row">
-            <text class="stat-label">
-              今日剩余
-            </text>
+          <text class="stat-label">
+            今日剩余
+          </text>
             <view class="refresh-btn" @click.stop="refreshQuota">
               <text class="refresh-icon">🔄</text>
             </view>

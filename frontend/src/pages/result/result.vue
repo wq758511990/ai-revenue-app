@@ -41,15 +41,15 @@
         
         <!-- 正常模式（从生成页进入）：显示所有操作 -->
         <template v-else>
-          <button class="action-btn primary" @click="handleCopy">
-            <text>复制文案</text>
-          </button>
-          <button class="action-btn secondary" @click="handleEdit">
-            <text>编辑</text>
-          </button>
-          <button class="action-btn secondary" @click="handleRegenerate">
-            <text>重新生成</text>
-          </button>
+        <button class="action-btn primary" @click="handleCopy">
+          <text>复制文案</text>
+        </button>
+        <button class="action-btn secondary" @click="handleEdit">
+          <text>编辑</text>
+        </button>
+        <button class="action-btn secondary" @click="handleRegenerate">
+          <text>重新生成</text>
+        </button>
         </template>
       </view>
 

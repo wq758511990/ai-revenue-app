@@ -42,7 +42,7 @@
           :key="status.value"
           class="filter-tab"
           :class="{ active: currentStatus === status.value }"
-          @click="filterByStatus(status.value)"
+          @click="filterByStatus(status.value as FeedbackStatus)"
         >
           {{ status.label }}
         </view>

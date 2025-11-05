@@ -1,30 +1,72 @@
 version: '3.8'
 
 services:
+  # MySQL 数据库
   mysql:
     image: mysql:8.0
-    container_name: ai-copywriting-mysql
+    container_name: ai-revenue-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: ai_copywriting
-      MYSQL_USER: app_user
-      MYSQL_PASSWORD: app_password
+      MYSQL_ROOT_PASSWORD: root_password_123
+      MYSQL_DATABASE: ai_revenue_db
+      MYSQL_USER: ai_user
+      MYSQL_PASSWORD: ai_password_123
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password_123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # Redis 缓存
   redis:
     image: redis:7-alpine
-    container_name: ai-copywriting-redis
+    container_name: ai-revenue-redis
     restart: always
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # 后端 API 服务
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-revenue-api
+    restart: always
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - .env
+    environment:
+      # 数据库连接（使用容器内部网络）
+      DATABASE_URL: mysql://ai_user:ai_password_123@mysql:3306/ai_revenue_db
+      # Redis 连接（使用容器内部网络）
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   mysql_data:

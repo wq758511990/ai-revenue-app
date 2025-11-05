@@ -9,61 +9,49 @@
 - **AI Provider**: DeepSeek (主) + SiliconFlow + Groq (备用)
 - **数据库**: MySQL 8.0 + Redis 6+
 
-## 🚀 快速开始
+## 🚀 快速开始（5分钟）
 
-### 1. 环境要求
+### 前置要求
+- 安装 Docker 和 Docker Compose
+- 获取微信小程序 AppID 和 AppSecret
+- 获取 DeepSeek API Key
 
-- Node.js >= 18
-- MySQL 8.0
-- Redis 6+
-- pnpm (推荐) 或 npm
-
-### 2. 启动数据库
+### 一键启动后端
 
 ```bash
-# 使用Docker启动MySQL和Redis
 cd backend
+
+# 1. 创建 .env 配置文件（参考 SIMPLE_DEPLOY.md）
+nano .env
+
+# 2. 启动所有服务（MySQL + Redis + API）
 docker-compose up -d
+
+# 3. 查看状态
+docker-compose ps
+docker-compose logs -f api
+
+# 验证服务
+curl http://localhost:3000/health
 ```
 
-### 3. 后端配置
+**完成！** 后端服务已运行在 http://localhost:3000
 
-```bash
-cd backend
-
-# 安装依赖
-npm install
-
-# 配置环境变量
-# 1. 复制 .env.example 到 .env
-# 2. 修改必要的配置（数据库、API密钥等）
-
-# 数据库迁移
-npx prisma migrate dev
-
-# 填充种子数据（12个场景 + 5种情绪风格）
-npm run prisma:seed
-
-# 启动开发服务器
-npm run dev
-```
-
-**后端服务将在 http://localhost:3000 启动**
-
-### 4. 前端配置
+### 前端小程序
 
 ```bash
 cd frontend
 
 # 安装依赖
-pnpm install
+npm install
 
-# 配置API地址（在项目中配置）
-# 编辑 src/main.ts 或配置文件
+# 编译小程序
+npm run build:mp-weixin
 
-# 启动开发服务器
-pnpm dev
+# 使用微信开发者工具打开 dist/build/mp-weixin 目录
 ```
+
+**详细部署指南**：查看 [SIMPLE_DEPLOY.md](./SIMPLE_DEPLOY.md)
 
 ## 📦 项目结构
 
