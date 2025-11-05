@@ -1,7 +1,13 @@
 # 后端 Dockerfile
-FROM node:18-alpine
+# 使用 Debian-slim 基础镜像（Prisma 需要 OpenSSL 支持）
+FROM node:18-slim
 
 WORKDIR /app
+
+# 安装 OpenSSL 和其他必要依赖
+RUN apt-get update -y && \
+    apt-get install -y openssl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 # 复制 package 文件
 COPY package*.json ./
