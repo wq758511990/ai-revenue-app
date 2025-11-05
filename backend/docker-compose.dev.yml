@@ -1,0 +1,11 @@
+# 本地开发环境配置
+# 使用方法：docker-compose up -d（自动加载）
+# 或显式指定：docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+services:
+  api:
+    env_file:
+      - .env  # 本地开发使用 .env
+    environment:
+      NODE_ENV: development
+
