@@ -1,0 +1,40 @@
+{
+  "name": "ai-copywriting-frontend",
+  "version": "1.0.0",
+  "description": "AI智能文案助手小程序前端",
+  "main": "main.js",
+  "scripts": {
+    "dev:mp-weixin": "uni -p mp-weixin",
+    "build:mp-weixin": "uni build -p mp-weixin",
+    "dev:h5": "uni",
+    "build:h5": "uni build",
+    "lint": "eslint --ext .js,.vue,.ts src",
+    "format": "prettier --write \"src/**/*.{js,ts,vue,json}\""
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "^3.0.0-alpha-4010620231227001",
+    "@dcloudio/uni-app-plus": "^3.0.0-alpha-4010620231227001",
+    "@dcloudio/uni-components": "^3.0.0-alpha-4010620231227001",
+    "@dcloudio/uni-h5": "^3.0.0-alpha-4010620231227001",
+    "@dcloudio/uni-mp-weixin": "^3.0.0-alpha-4010620231227001",
+    "pinia": "^2.1.7",
+    "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "^3.4.8",
+    "@dcloudio/uni-automator": "^3.0.0-alpha-4010620231227001",
+    "@dcloudio/uni-cli-shared": "^3.0.0-alpha-4010620231227001",
+    "@dcloudio/vite-plugin-uni": "^3.0.0-alpha-4010620231227001",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@vue/runtime-core": "^3.3.4",
+    "eslint": "^8.54.0",
+    "eslint-plugin-vue": "^9.18.0",
+    "prettier": "^3.1.0",
+    "sass": "^1.69.0",
+    "typescript": "^5.3.2",
+    "vite": "^5.0.0"
+  }
+}
+

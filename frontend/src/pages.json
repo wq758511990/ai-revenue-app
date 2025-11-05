@@ -1,0 +1,95 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "AI文案助手",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/generate/generate",
+      "style": {
+        "navigationBarTitleText": "生成文案",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/result/result",
+      "style": {
+        "navigationBarTitleText": "文案结果",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/profile/profile",
+      "style": {
+        "navigationBarTitleText": "个人中心",
+        "enablePullDownRefresh": false
+      }
+    }
+  ],
+  "subPackages": [
+    {
+      "root": "pages-sub/membership",
+      "pages": [
+        {
+          "path": "membership",
+          "style": {
+            "navigationBarTitleText": "会员中心"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages-sub/profile",
+      "pages": [
+        {
+          "path": "history",
+          "style": {
+            "navigationBarTitleText": "历史记录"
+          }
+        },
+        {
+          "path": "feedback",
+          "style": {
+            "navigationBarTitleText": "反馈建议"
+          }
+        },
+        {
+          "path": "feedback-history",
+          "style": {
+            "navigationBarTitleText": "我的反馈"
+          }
+        }
+      ]
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "AI文案助手",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#667eea",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/icons/home.png",
+        "selectedIconPath": "static/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "static/icons/profile.png",
+        "selectedIconPath": "static/icons/profile-active.png"
+      }
+    ]
+  }
+}
+

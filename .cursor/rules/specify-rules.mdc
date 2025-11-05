@@ -1,0 +1,32 @@
+# ai-revenue-app Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2025-11-05
+
+## Active Technologies
+- Vue 3, Pinia（状态管理）, uni-ui组件库, uView UI (001-ai-copywriting-mini-app)
+- MySQL 8.0+（用户、订单、内容、反馈数据） + Redis 6.0+（会话、限流、缓存） (001-ai-copywriting-mini-app)
+
+- (001-ai-copywriting-mini-app)
+
+## Project Structure
+
+```text
+src/
+tests/
+```
+
+## Commands
+
+# Add commands for 
+
+## Code Style
+
+: Follow standard conventions
+
+## Recent Changes
+- 001-ai-copywriting-mini-app: Added Vue 3, Pinia（状态管理）, uni-ui组件库, uView UI
+
+- 001-ai-copywriting-mini-app: Added
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->

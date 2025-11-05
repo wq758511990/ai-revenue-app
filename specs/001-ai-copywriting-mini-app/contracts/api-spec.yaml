@@ -1,0 +1,786 @@
+openapi: 3.0.3
+info:
+  title: AI智能文案助手小程序 API
+  description: |
+    AI文案生成小程序的后端API规范
+    
+    ## 认证方式
+    所有API（除登录外）需要在Header中携带Token:
+    ```
+    Authorization: Bearer <token>
+    ```
+    
+    ## 响应格式
+    成功响应统一格式:
+    ```json
+    {
+      "code": 0,
+      "data": {},
+      "message": "success"
+    }
+    ```
+    
+    错误响应统一格式:
+    ```json
+    {
+      "code": 1001,
+      "data": null,
+      "message": "错误描述"
+    }
+    ```
+    
+    ## 错误码
+    - 0: 成功
+    - 1001: 参数错误
+    - 1002: 认证失败
+    - 1003: 权限不足
+    - 1004: 资源不存在
+    - 1005: 配额不足
+    - 1006: 服务暂时不可用
+    
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production
+  - url: https://dev-api.example.com/v1
+    description: Development
+
+tags:
+  - name: auth
+    description: 认证相关
+  - name: scenarios
+    description: 场景管理
+  - name: content
+    description: 文案生成
+  - name: user
+    description: 用户信息
+  - name: payment
+    description: 支付相关
+  - name: feedback
+    description: 用户反馈
+
+paths:
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: 微信小程序登录
+      description: 使用微信code换取token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+                  description: 微信登录凭证code
+                  example: "081xYz0w3JKP9z2HAa3w3Vkqrv3xYz0h"
+                nickname:
+                  type: string
+                  description: 用户昵称（可选）
+                  example: "张三"
+                avatarUrl:
+                  type: string
+                  description: 用户头像URL（可选）
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+                            description: 访问令牌
+                          user:
+                            $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/refresh:
+    post:
+      tags: [auth]
+      summary: 刷新Token
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 刷新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+
+  /scenarios:
+    get:
+      tags: [scenarios]
+      summary: 获取场景列表
+      description: 获取所有可用的文案生成场景
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 成功获取场景列表
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          scenarios:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Scenario'
+
+  /scenarios/{slug}:
+    get:
+      tags: [scenarios]
+      summary: 获取场景详情
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "xiaohongshu"
+      responses:
+        '200':
+          description: 成功获取场景详情
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Scenario'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /content/generate:
+    post:
+      tags: [content]
+      summary: 生成文案
+      description: 根据场景和用户输入生成文案
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenarioSlug
+                - toneStyle
+                - userInput
+              properties:
+                scenarioSlug:
+                  type: string
+                  description: 场景标识
+                  example: "xiaohongshu"
+                toneStyle:
+                  type: string
+                  description: 情绪风格
+                  enum: [ENTHUSIASTIC, PROFESSIONAL, HUMOROUS, GENTLE, CONCISE]
+                  example: "ENTHUSIASTIC"
+                userInput:
+                  type: object
+                  description: 用户输入数据（根据场景inputSchema动态）
+                  example:
+                    productName: "口红"
+                    features: "持久保湿，不易脱色"
+                    targetAudience: "年轻女性"
+      responses:
+        '200':
+          description: 生成成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          recordId:
+                            type: string
+                            format: uuid
+                          content:
+                            type: string
+                            description: 生成的文案内容
+                          generationTime:
+                            type: integer
+                            description: 生成耗时（毫秒）
+                          remaining:
+                            type: integer
+                            description: 剩余可用次数
+        '429':
+          description: 配额不足
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                quotaExceeded:
+                  value:
+                    code: 1005
+                    message: "今日配额已用完，请升级会员或购买次数"
+                    data:
+                      membershipType: "FREE"
+                      remaining: 0
+
+  /content/regenerate:
+    post:
+      tags: [content]
+      summary: 重新生成文案
+      description: 保持相同输入和风格重新生成
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - recordId
+              properties:
+                recordId:
+                  type: string
+                  format: uuid
+                  description: 原记录ID
+      responses:
+        '200':
+          description: 重新生成成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          recordId:
+                            type: string
+                          content:
+                            type: string
+                          remaining:
+                            type: integer
+
+  /content/edit:
+    put:
+      tags: [content]
+      summary: 编辑文案
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - recordId
+                - editedContent
+              properties:
+                recordId:
+                  type: string
+                  format: uuid
+                editedContent:
+                  type: string
+                  description: 编辑后的内容
+      responses:
+        '200':
+          description: 编辑成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /content/history:
+    get:
+      tags: [content]
+      summary: 获取历史记录
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 50
+        - name: scenarioSlug
+          in: query
+          schema:
+            type: string
+          description: 按场景筛选（可选）
+        - name: toneStyle
+          in: query
+          schema:
+            type: string
+          description: 按风格筛选（可选）
+      responses:
+        '200':
+          description: 成功获取历史记录
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          records:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ContentRecord'
+                          pagination:
+                            $ref: '#/components/schemas/Pagination'
+
+  /user/profile:
+    get:
+      tags: [user]
+      summary: 获取用户信息
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 成功获取用户信息
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: '#/components/schemas/User'
+                          - type: object
+                            properties:
+                              quota:
+                                type: object
+                                properties:
+                                  dailyLimit:
+                                    type: integer
+                                  usedToday:
+                                    type: integer
+                                  remaining:
+                                    type: integer
+                                  purchasedQuota:
+                                    type: integer
+
+  /payment/create-order:
+    post:
+      tags: [payment]
+      summary: 创建订单
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderType
+              properties:
+                orderType:
+                  type: string
+                  enum: [MEMBERSHIP, PAY_PER_USE]
+                membershipType:
+                  type: string
+                  enum: [MONTHLY, YEARLY]
+                  description: orderType=MEMBERSHIP时必填
+                quantity:
+                  type: integer
+                  default: 1
+                  description: orderType=PAY_PER_USE时的购买次数
+      responses:
+        '200':
+          description: 订单创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          orderId:
+                            type: string
+                          orderNo:
+                            type: string
+                          amount:
+                            type: number
+                          paymentParams:
+                            type: object
+                            description: 微信支付参数
+                            properties:
+                              prepayId:
+                                type: string
+                              timeStamp:
+                                type: string
+                              nonceStr:
+                                type: string
+                              signType:
+                                type: string
+                              paySign:
+                                type: string
+
+  /payment/order-status:
+    get:
+      tags: [payment]
+      summary: 查询订单状态
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: orderId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 订单状态
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Order'
+
+  /payment/webhook:
+    post:
+      tags: [payment]
+      summary: 微信支付回调
+      description: 微信支付完成后的异步通知（不需要认证）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: 微信支付回调数据
+      responses:
+        '200':
+          description: 处理成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "SUCCESS"
+                  message:
+                    type: string
+                    example: "处理成功"
+
+  /feedback:
+    post:
+      tags: [feedback]
+      summary: 提交反馈
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - feedbackType
+                - content
+              properties:
+                feedbackType:
+                  type: string
+                  enum: [NEW_TONE, NEW_SCENARIO, FEATURE_REQUEST, BUG_REPORT]
+                content:
+                  type: string
+                  minLength: 5
+                  maxLength: 200
+                  description: 反馈内容
+      responses:
+        '200':
+          description: 提交成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          feedbackId:
+                            type: string
+                          message:
+                            type: string
+                            example: "感谢您的反馈，我们会认真考虑！"
+
+    get:
+      tags: [feedback]
+      summary: 获取反馈历史
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [SUBMITTED, IN_PROGRESS, ADOPTED, REPLIED, CLOSED]
+      responses:
+        '200':
+          description: 成功获取反馈列表
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          feedbacks:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Feedback'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: "success"
+        data:
+          type: object
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 1001
+        message:
+          type: string
+          example: "错误描述"
+        data:
+          nullable: true
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nickname:
+          type: string
+        avatarUrl:
+          type: string
+        membershipType:
+          type: string
+          enum: [FREE, MONTHLY, YEARLY]
+        membershipExpireAt:
+          type: string
+          format: date-time
+          nullable: true
+        purchasedQuota:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    Scenario:
+      type: object
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        platform:
+          type: string
+        inputSchema:
+          type: object
+        defaultToneStyle:
+          type: string
+        maxLength:
+          type: integer
+
+    ContentRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        scenarioName:
+          type: string
+        toneStyle:
+          type: string
+        generatedContent:
+          type: string
+        isEdited:
+          type: boolean
+        editedContent:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        orderNo:
+          type: string
+        orderType:
+          type: string
+        membershipType:
+          type: string
+          nullable: true
+        amount:
+          type: number
+        status:
+          type: string
+          enum: [PENDING, PAID, REFUNDED, CANCELLED]
+        paidAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    Feedback:
+      type: object
+      properties:
+        id:
+          type: string
+        feedbackType:
+          type: string
+        content:
+          type: string
+        status:
+          type: string
+        adminReply:
+          type: string
+          nullable: true
+        repliedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+        totalPages:
+          type: integer
+
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 1001
+            message: "参数错误"
+            data: null
+
+    Unauthorized:
+      description: 未授权
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 1002
+            message: "Token无效或已过期"
+            data: null
+
+    NotFound:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 1004
+            message: "资源不存在"
+            data: null
+

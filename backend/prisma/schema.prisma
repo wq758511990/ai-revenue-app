@@ -1,0 +1,205 @@
+// Prisma Schema for AI智能文案助手
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 用户账户
+model User {
+  id                  String        @id @default(uuid())
+  openId              String        @unique @map("open_id") @db.VarChar(128)
+  unionId             String?       @unique @map("union_id") @db.VarChar(128)
+  nickname            String?       @db.VarChar(100)
+  avatarUrl           String?       @map("avatar_url") @db.VarChar(500)
+  membershipType      MembershipType @default(FREE) @map("membership_type")
+  membershipExpireAt  DateTime?     @map("membership_expire_at")
+  purchasedQuota      Int           @default(0) @map("purchased_quota")
+  status              UserStatus    @default(ACTIVE)
+  lastLoginAt         DateTime?     @map("last_login_at")
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+
+  quota               UsageQuota?
+  contentRecords      ContentRecord[]
+  orders              Order[]
+  feedbacks           Feedback[]
+
+  @@index([openId])
+  @@index([membershipType, membershipExpireAt])
+  @@map("users")
+}
+
+// 文案生成场景
+model ContentScenario {
+  id              String   @id @default(uuid())
+  name            String   @db.VarChar(50)
+  slug            String   @unique @db.VarChar(50)
+  description     String?  @db.Text
+  icon            String?  @db.VarChar(200)
+  platform        String   @db.VarChar(50)
+  inputSchema     Json     @map("input_schema")
+  systemPrompt    String   @map("system_prompt") @db.Text
+  defaultToneStyle String  @default("ENTHUSIASTIC") @map("default_tone_style") @db.VarChar(50)
+  maxLength       Int      @default(500) @map("max_length")
+  sortOrder       Int      @default(0) @map("sort_order")
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  contentRecords  ContentRecord[]
+
+  @@index([slug])
+  @@index([isActive, sortOrder])
+  @@map("content_scenarios")
+}
+
+// 情绪风格配置
+model ToneStyle {
+  id              String   @id @default(uuid())
+  name            String   @db.VarChar(50)
+  slug            String   @unique @db.VarChar(50)
+  description     String?  @db.Text
+  promptModifier  String   @map("prompt_modifier") @db.Text
+  sortOrder       Int      @default(0) @map("sort_order")
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive, sortOrder])
+  @@map("tone_styles")
+}
+
+// 文案记录
+model ContentRecord {
+  id                String          @id @default(uuid())
+  userId            String          @map("user_id")
+  scenarioId        String          @map("scenario_id")
+  toneStyle         String          @map("tone_style") @db.VarChar(50)
+  userInput         Json            @map("user_input")
+  generatedContent  String          @map("generated_content") @db.Text
+  isEdited          Boolean         @default(false) @map("is_edited")
+  editedContent     String?         @map("edited_content") @db.Text
+  generationTime    Int?            @map("generation_time")
+  aiModel           String          @default("deepseek-chat") @map("ai_model") @db.VarChar(50)
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  user              User            @relation(fields: [userId], references: [id])
+  scenario          ContentScenario @relation(fields: [scenarioId], references: [id])
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([scenarioId, createdAt(sort: Desc)])
+  @@index([toneStyle, createdAt(sort: Desc)])
+  @@map("content_records")
+}
+
+// 使用配额
+model UsageQuota {
+  id            String   @id @default(uuid())
+  userId        String   @unique @map("user_id")
+  dailyLimit    Int      @map("daily_limit")
+  usedToday     Int      @default(0) @map("used_today")
+  lastResetDate DateTime @map("last_reset_date") @db.Date
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@index([lastResetDate])
+  @@map("usage_quota")
+}
+
+// 订单记录
+model Order {
+  id              String         @id @default(uuid())
+  orderNo         String         @unique @map("order_no") @db.VarChar(32)
+  userId          String         @map("user_id")
+  orderType       OrderType      @map("order_type")
+  membershipType  MembershipType? @map("membership_type")
+  quantity        Int            @default(1)
+  amount          Decimal        @db.Decimal(10, 2)
+  status          OrderStatus    @default(PENDING)
+  paymentMethod   String         @default("WECHAT_PAY") @map("payment_method") @db.VarChar(50)
+  transactionId   String?        @map("transaction_id") @db.VarChar(100)
+  paidAt          DateTime?      @map("paid_at")
+  refundedAt      DateTime?      @map("refunded_at")
+  refundReason    String?        @map("refund_reason") @db.Text
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+
+  user            User           @relation(fields: [userId], references: [id])
+
+  @@index([orderNo])
+  @@index([userId, status, createdAt(sort: Desc)])
+  @@index([status, createdAt(sort: Desc)])
+  @@index([transactionId])
+  @@map("orders")
+}
+
+// 用户反馈
+model Feedback {
+  id            String       @id @default(uuid())
+  userId        String       @map("user_id")
+  feedbackType  FeedbackType @map("feedback_type")
+  content       String       @db.Text
+  status        FeedbackStatus @default(SUBMITTED)
+  adminReply    String?      @map("admin_reply") @db.Text
+  repliedAt     DateTime?    @map("replied_at")
+  repliedBy     String?      @map("replied_by") @db.VarChar(100)
+  priority      Int          @default(0)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  user          User         @relation(fields: [userId], references: [id])
+
+  @@index([userId, feedbackType, createdAt(sort: Desc)])
+  @@index([status, priority(sort: Desc), createdAt(sort: Desc)])
+  @@index([feedbackType, status])
+  @@map("feedbacks")
+}
+
+// 枚举类型
+enum MembershipType {
+  FREE
+  MONTHLY
+  YEARLY
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum OrderType {
+  MEMBERSHIP
+  PAY_PER_USE
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  REFUNDED
+  CANCELLED
+}
+
+enum FeedbackType {
+  NEW_TONE
+  NEW_SCENARIO
+  FEATURE_REQUEST
+  BUG_REPORT
+}
+
+enum FeedbackStatus {
+  SUBMITTED
+  IN_PROGRESS
+  ADOPTED
+  REPLIED
+  CLOSED
+}
+

@@ -1,0 +1,31 @@
+{
+  "name": "AI智能文案助手",
+  "appid": "__UNI__REPLACE_WITH_YOUR_APPID__",
+  "description": "AI智能文案生成助手",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "mp-weixin": {
+    "appid": "wx5813bc047d6da298",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "postcss": true,
+      "minified": true
+    },
+    "usingComponents": true,
+    "permission": {
+      "scope.userLocation": {
+        "desc": "获取您的位置信息用于优化服务"
+      }
+    }
+  },
+  "h5": {
+    "title": "AI智能文案助手",
+    "router": {
+      "mode": "hash",
+      "base": "/"
+    }
+  }
+}
+
