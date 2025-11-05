@@ -34,6 +34,9 @@ COPY tsconfig.json ./
 # 编译 TypeScript
 RUN npm run build
 
+# 编译 seed 脚本
+RUN npx tsc prisma/seed.ts --outDir prisma --module commonjs --esModuleInterop
+
 # ============================================
 # Stage 2: 生产运行阶段（更小的镜像）
 # ============================================
@@ -74,7 +77,7 @@ CMD ["sh", "-c", "set -e && \
     echo '🔄 Running database migrations...' && \
     npx prisma migrate deploy && \
     echo '🌱 Seeding database...' && \
-    (npx prisma db seed || echo '⚠️  Seed failed or already seeded, continuing...') && \
+    (node prisma/seed.js 2>/dev/null || npx prisma db seed || echo '⚠️ Seed skipped') && \
     echo '🚀 Starting application...' && \
     exec node dist/app.js"]
 
