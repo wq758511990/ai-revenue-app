@@ -49,8 +49,6 @@ services:
       - "${PORT:-3000}:3000"
     env_file:
       - .env  # 默认使用 .env（本地开发）
-    environment:
-      # 这些会覆盖 .env 中的对应配置（仅在需要时使用）
     depends_on:
       mysql:
         condition: service_healthy
