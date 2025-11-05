@@ -36,20 +36,6 @@ export class ScenarioService {
   }
 
   /**
-   * 根据slug获取场景
-   */
-  async getScenarioBySlug(slug: string) {
-    const scenarios = await this.getAllScenarios();
-    const scenario = scenarios.find((s: any) => s.slug === slug);
-
-    if (!scenario) {
-      throw new Error(`场景不存在: ${slug}`);
-    }
-
-    return scenario;
-  }
-
-  /**
    * 根据ID获取场景
    */
   async getScenarioById(id: string) {
