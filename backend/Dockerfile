@@ -65,11 +65,11 @@ EXPOSE 3000
 
 # 启动脚本
 CMD ["sh", "-c", "set -e && \
-    echo '=== 环境变量检查 ===' && \
+    echo '=== 环境检查 ===' && \
     echo \"NODE_ENV: $NODE_ENV\" && \
     echo \"PORT: $PORT\" && \
-    echo \"DATABASE_URL: ${DATABASE_URL:0:30}...\" && \
-    echo \"JWT_SECRET: ${JWT_SECRET:0:10}...\" && \
+    echo 'DATABASE_URL: configured' && \
+    echo 'JWT_SECRET: configured' && \
     echo '' && \
     echo '🔄 Running database migrations...' && \
     npx prisma migrate deploy && \
