@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
-import path from 'path';
 
-// 加载环境变量
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+// 加载环境变量（Docker 环境会通过 env_file 注入，本地开发需要 .env 文件）
+// 如果环境变量已经存在（Docker），dotenv 不会覆盖它们
+dotenv.config();
 
 export const config = {
   // 服务配置

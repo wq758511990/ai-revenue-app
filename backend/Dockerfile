@@ -36,6 +36,18 @@ RUN echo "=== 检查编译结果 ===" && \
 # 暴露端口
 EXPOSE 3000
 
-# 启动命令
-CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && node dist/app.js"]
+# 启动脚本
+CMD ["sh", "-c", "set -e && \
+    echo '=== 环境变量检查 ===' && \
+    echo \"NODE_ENV: $NODE_ENV\" && \
+    echo \"PORT: $PORT\" && \
+    echo \"DATABASE_URL: ${DATABASE_URL:0:30}...\" && \
+    echo \"JWT_SECRET: ${JWT_SECRET:0:10}...\" && \
+    echo '' && \
+    echo '🔄 Running database migrations...' && \
+    npx prisma migrate deploy && \
+    echo '🌱 Seeding database...' && \
+    npx prisma db seed && \
+    echo '🚀 Starting application...' && \
+    exec node dist/app.js"]
 
