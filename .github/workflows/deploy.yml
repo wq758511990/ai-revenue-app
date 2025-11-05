@@ -32,6 +32,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           debug: true
+          command_timeout: 30m
+          timeout: 30m
           script: |
             echo "🚀 开始部署..."
             
