@@ -12,11 +12,14 @@ RUN apt-get update -y && \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+# 安装 pnpm（全局，这一层会被缓存）
+RUN npm install -g pnpm
+
 # 复制 package 文件（单独一层，便于缓存）
-COPY package*.json ./
+COPY package.json pnpm-lock.yaml ./
 
 # 安装依赖（这一层也会被缓存）
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 
 # 复制 Prisma schema
 COPY prisma ./prisma/

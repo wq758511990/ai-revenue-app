@@ -7,6 +7,7 @@
 # 依赖
 node_modules/
 npm-debug.log*
+package-lock.json  # 使用 pnpm，忽略 npm lock 文件
 
 # 日志
 logs/
