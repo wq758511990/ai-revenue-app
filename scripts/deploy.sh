@@ -16,7 +16,7 @@ echo -e "${GREEN}🚀 开始部署 AI 文案助手...${NC}"
 echo ""
 
 # 项目目录
-PROJECT_DIR="/var/www/ai-revenue-app"
+PROJECT_DIR="/var/www/ai-revenue-app/ai-revenue-app"
 BACKUP_DIR="/var/backups/ai-revenue-app"
 
 # 创建备份目录
