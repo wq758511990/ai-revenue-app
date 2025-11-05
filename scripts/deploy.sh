@@ -37,10 +37,19 @@ git pull origin main
 echo -e "${GREEN}✓ 代码更新完成${NC}"
 echo ""
 
-# 步骤 3: 重新构建容器
+# 步骤 3: 智能重新构建容器
 echo -e "${YELLOW}🔨 重新构建 Docker 容器...${NC}"
 cd $PROJECT_DIR/backend
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache api
+
+# 检查是否需要完全重新构建（Dockerfile 或 package.json 有变化）
+if git diff HEAD@{1} HEAD --name-only | grep -qE "Dockerfile|package.*\.json|tsconfig\.json"; then
+    echo -e "${YELLOW}检测到依赖或构建配置变化，使用 --no-cache 重新构建...${NC}"
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache api
+else
+    echo -e "${YELLOW}使用缓存快速构建...${NC}"
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build api
+fi
+
 echo -e "${GREEN}✓ 容器构建完成${NC}"
 echo ""
 

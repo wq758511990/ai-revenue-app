@@ -45,10 +45,19 @@ jobs:
             # 进入后端目录
             cd backend
             
-            # 重新构建并启动容器（使用生产配置）
+            # 智能重新构建并启动容器
             echo "🔨 重新构建容器..."
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
-            docker-compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache
+            
+            # 检测是否需要完全重建
+            if git diff HEAD@{1} HEAD --name-only | grep -qE "Dockerfile|package.*\.json|tsconfig\.json"; then
+                echo "检测到依赖变化，完全重建..."
+                docker-compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache api
+            else
+                echo "使用缓存快速构建..."
+                docker-compose -f docker-compose.yml -f docker-compose.prod.yml build api
+            fi
+            
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
             
             # 等待服务启动
