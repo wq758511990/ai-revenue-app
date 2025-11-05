@@ -32,6 +32,9 @@ importers:
       helmet:
         specifier: ^7.1.0
         version: 7.2.0
+      ioredis:
+        specifier: ^5.8.2
+        version: 5.8.2
       joi:
         specifier: ^17.11.0
         version: 17.13.3
