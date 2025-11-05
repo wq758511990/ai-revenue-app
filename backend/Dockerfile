@@ -12,15 +12,11 @@ RUN apt-get update -y && \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# 安装 pnpm
-RUN npm install -g pnpm
-
 # 复制 package 文件（单独一层，便于缓存）
-COPY package*.json pnpm-lock.yaml ./
+COPY package*.json ./
 
 # 安装依赖（这一层也会被缓存）
-RUN pnpm install --prod --frozen-lockfile && \
-    pnpm add -D typescript @types/node prisma ts-node
+RUN npm ci
 
 # 复制 Prisma schema
 COPY prisma ./prisma/
