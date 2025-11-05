@@ -39,18 +39,30 @@ export class ScenarioService {
    * 根据ID获取场景
    */
   async getScenarioById(id: string) {
-    return await prisma.contentScenario.findUnique({
+    const scenario = await prisma.contentScenario.findUnique({
       where: { id },
     });
+
+    if (!scenario) {
+      throw new Error(`场景不存在: ${id}`);
+    }
+
+    return scenario;
   }
 
   /**
    * 根据slug获取场景
    */
   async getScenarioBySlug(slug: string) {
-    return await prisma.contentScenario.findUnique({
+    const scenario = await prisma.contentScenario.findUnique({
       where: { slug },
     });
+
+    if (!scenario) {
+      throw new Error(`场景不存在: ${slug}`);
+    }
+
+    return scenario;
   }
 }
 

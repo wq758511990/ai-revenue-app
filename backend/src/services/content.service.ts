@@ -96,11 +96,8 @@ export class ContentService {
         };
       }
 
-      // 2. 获取场景配置
+      // 2. 获取场景配置（现在 service 会在找不到时抛出错误）
       const scenario = await scenarioService.getScenarioBySlug(scenarioSlug);
-      if (!scenario) {
-        return this.handleFailureWithRefund(userId, '场景不存在');
-      }
 
       // 3. 验证用户输入
       const validationError = this.validateUserInput(userInput, scenario.inputSchema);
@@ -209,14 +206,8 @@ export class ContentService {
         };
       }
 
-      // 3. 获取场景信息
+      // 3. 获取场景信息（现在 service 会在找不到时抛出错误）
       const scenario = await scenarioService.getScenarioById(originalRecord.scenarioId);
-      if (!scenario) {
-        return {
-          success: false,
-          error: '场景不存在',
-        };
-      }
 
       // 4. 使用原始输入和新的风格（或保持原风格）重新生成
       const toneStyle = newToneStyle || originalRecord.toneStyle;
