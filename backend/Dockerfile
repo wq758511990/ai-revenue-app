@@ -25,6 +25,9 @@ RUN npx prisma generate
 # 编译 TypeScript
 RUN npm run build
 
+# 验证构建输出（调试用）
+RUN ls -la /app/dist/ || echo "dist directory not found"
+
 # 暴露端口
 EXPOSE 3000
 
