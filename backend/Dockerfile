@@ -74,7 +74,7 @@ CMD ["sh", "-c", "set -e && \
     echo '🔄 Running database migrations...' && \
     npx prisma migrate deploy && \
     echo '🌱 Seeding database...' && \
-    npx prisma db seed && \
+    (npx prisma db seed || echo '⚠️  Seed failed or already seeded, continuing...') && \
     echo '🚀 Starting application...' && \
     exec node dist/app.js"]
 
