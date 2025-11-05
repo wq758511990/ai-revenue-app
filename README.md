@@ -16,16 +16,33 @@
 - 获取微信小程序 AppID 和 AppSecret
 - 获取 DeepSeek API Key
 
-### 一键启动后端
+### 本地开发（Docker）
 
 ```bash
 cd backend
 
-# 1. 创建 .env 配置文件（参考 SIMPLE_DEPLOY.md）
-nano .env
+# 1. 配置环境变量
+cp .env.example .env
+nano .env  # 填入微信和 AI 配置
 
-# 2. 启动所有服务（MySQL + Redis + API）
+# 2. 启动所有服务（推荐）
 docker-compose up -d
+
+# 3. 查看日志
+docker-compose logs -f api
+```
+
+### 生产部署
+
+```bash
+cd backend
+
+# 1. 配置生产环境变量
+cp .env.production.example .env.production
+nano .env.production  # 填入配置
+
+# 2. 使用生产配置启动
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 # 3. 查看状态
 docker-compose ps

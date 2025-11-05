@@ -40,14 +40,14 @@ echo ""
 # 步骤 3: 重新构建容器
 echo -e "${YELLOW}🔨 重新构建 Docker 容器...${NC}"
 cd $PROJECT_DIR/backend
-docker-compose build --no-cache api
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache api
 echo -e "${GREEN}✓ 容器构建完成${NC}"
 echo ""
 
 # 步骤 4: 重启服务
 echo -e "${YELLOW}🔄 重启服务...${NC}"
-docker-compose down
-docker-compose up -d
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 echo -e "${GREEN}✓ 服务重启完成${NC}"
 echo ""
 
@@ -68,7 +68,7 @@ echo ""
 
 # 步骤 7: 显示服务状态
 echo -e "${YELLOW}📊 服务状态:${NC}"
-docker-compose ps
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml ps
 echo ""
 
 # 步骤 8: 清理旧备份（保留最近7天）

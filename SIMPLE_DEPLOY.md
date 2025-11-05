@@ -2,27 +2,43 @@
 
 ## 一、后端一键部署（5分钟）
 
-### 1. 创建配置文件
+### 1. 配置生产环境变量
 
 ```bash
 cd backend
 
-# 创建 .env 文件
-cat > .env << 'EOF'
-# 服务器配置
+# 复制生产环境配置模板
+cp .env.production.example .env.production
+
+# 编辑配置
+nano .env.production
+```
+
+或者直接创建：
+
+```bash
+cd backend
+
+# 创建 .env.production 文件
+cat > .env.production << 'EOF'
 NODE_ENV=production
 PORT=3000
 LOG_LEVEL=info
 
-# JWT 配置（生成随机密钥：openssl rand -base64 32）
+# 数据库和 Redis（Docker 容器网络，不要修改）
+DATABASE_URL=mysql://ai_user:ai_password_123@mysql:3306/ai_revenue_db
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+# JWT 配置（必须修改！）
 JWT_SECRET=your_random_secret_at_least_32_characters_long
 JWT_EXPIRES_IN=7d
 
-# 微信小程序配置
+# 微信小程序配置（必填）
 WECHAT_APP_ID=你的小程序AppID
 WECHAT_APP_SECRET=你的小程序AppSecret
 
-# AI 服务配置（DeepSeek 推荐）
+# AI 服务配置（必填）
 DEEPSEEK_API_KEY=你的DeepSeek_API_Key
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-chat
@@ -42,7 +58,7 @@ RATE_LIMIT_MAX_REQUESTS=100
 EOF
 
 # 然后编辑填入真实值
-nano .env
+nano .env.production
 ```
 
 **必须修改的 4 项**：
@@ -54,8 +70,8 @@ nano .env
 ### 2. 启动所有服务
 
 ```bash
-# 构建并启动所有容器
-docker-compose up -d
+# 使用生产配置启动所有容器
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 # 查看启动状态
 docker-compose ps

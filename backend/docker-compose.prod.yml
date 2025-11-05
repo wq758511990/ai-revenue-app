@@ -1,0 +1,12 @@
+version: '3.8'
+
+# 生产环境配置覆盖
+# 使用方法：docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  api:
+    env_file:
+      - .env.production  # 生产环境使用 .env.production
+    environment:
+      NODE_ENV: production
+

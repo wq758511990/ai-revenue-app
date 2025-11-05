@@ -48,13 +48,9 @@ services:
     ports:
       - "${PORT:-3000}:3000"
     env_file:
-      - .env
+      - .env  # 默认使用 .env（本地开发）
     environment:
-      # 数据库连接（使用容器内部网络）
-      DATABASE_URL: mysql://ai_user:ai_password_123@mysql:3306/ai_revenue_db
-      # Redis 连接（使用容器内部网络）
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+      # 这些会覆盖 .env 中的对应配置（仅在需要时使用）
     depends_on:
       mysql:
         condition: service_healthy
