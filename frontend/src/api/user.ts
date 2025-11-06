@@ -1,23 +1,5 @@
 import { get, post } from '@/utils/request';
-
-export interface QuotaInfo {
-  userId: string;
-  dailyQuota: number;
-  usedQuota: number;
-  remainingQuota: number;
-  purchasedQuota: number;
-  membershipType: 'FREE' | 'MONTHLY' | 'YEARLY';
-  membershipExpireAt: string | null;
-  resetAt: string;
-}
-
-export interface UserProfile {
-  id: string;
-  nickname?: string;
-  avatarUrl?: string;
-  membershipType: string;
-  membershipExpireAt?: string;
-}
+import type { QuotaInfo, UserProfile } from '@/types';
 
 export const apiUser = {
   /**

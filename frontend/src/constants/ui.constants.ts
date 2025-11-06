@@ -35,30 +35,14 @@ export const TOAST_ICON = {
   LOADING: 'loading',
 } as const;
 
-// 情绪风格图标映射
-export const TONE_STYLE_ICONS: Record<string, string> = {
-  ENTHUSIASTIC: '🔥',
-  PROFESSIONAL: '💼',
-  HUMOROUS: '😄',
-  GENTLE: '🌸',
-  CONCISE: '⚡',
-};
-
-// 情绪风格名称映射
-export const TONE_STYLE_NAMES: Record<string, string> = {
-  ENTHUSIASTIC: '热情洋溢',
-  PROFESSIONAL: '专业严谨',
-  HUMOROUS: '轻松幽默',
-  GENTLE: '温柔亲和',
-  CONCISE: '简洁直接',
-};
-
-// 情绪风格颜色
-export const TONE_STYLE_COLORS: Record<string, string> = {
-  ENTHUSIASTIC: 'background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);',
-  PROFESSIONAL: 'background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);',
-  HUMOROUS: 'background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);',
-  GENTLE: 'background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);',
-  CONCISE: 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);',
-};
+// 情绪风格相关常量已移至 @/constants/tone-style.constants.ts
+// 为保持向后兼容，这里重新导出（建议直接使用新文件）
+export {
+  TONE_STYLE_ICONS,
+  TONE_STYLE_LABELS as TONE_STYLE_NAMES,
+  TONE_STYLE_COLORS,
+  getToneStyleIcon,
+  getToneStyleLabel,
+  getToneStyleColor,
+} from './tone-style.constants';
 

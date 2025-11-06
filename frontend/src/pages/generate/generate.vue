@@ -106,19 +106,21 @@
 <script setup lang="ts">
 import Loading from '@/components/Loading.vue';
 import ToneSelector from '@/components/ToneSelector.vue';
+import { getToneStyleIcon, TONE_STYLE_LABELS } from '@/constants/tone-style.constants';
+import { MAX_CONTENT_LENGTH } from '@/constants/ui.constants';
 import { useScenarioStore } from '@/stores/scenario';
+import type { FormField, Scenario, ToneStyle } from '@/types';
 import { get, post } from '@/utils/request';
+import { showError, showLongToast, showToast } from '@/utils/toast';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import { computed, ref, watch } from 'vue';
-import { showError, showToast, showLongToast } from '@/utils/toast';
-import { MAX_CONTENT_LENGTH, TONE_STYLE_ICONS } from '@/constants/ui.constants';
 
 const scenarioStore = useScenarioStore();
 const scenario = computed(() => scenarioStore.currentScenario);
 
-const formFields = ref<any[]>([]);
-const formData = ref<Record<string, any>>({});
-const toneStyles = ref<any[]>([]);
+const formFields = ref<FormField[]>([]);
+const formData = ref<Record<string, string>>({});
+const toneStyles = ref<ToneStyle[]>([]);
 const selectedToneStyle = ref('');
 const defaultToneStyle = ref('');
 const generating = ref(false);
@@ -132,12 +134,12 @@ let isReturningFromResult = false;
 const toneStylesWithIcon = computed(() => {
   return toneStyles.value.map(tone => ({
     ...tone,
-    icon: TONE_STYLE_ICONS[tone.slug] || '📝',
+    icon: getToneStyleIcon(tone.slug),
   }));
 });
 
-onLoad((options: any) => {
-  scenarioSlug = options.slug;
+onLoad((options: Record<string, unknown>) => {
+  scenarioSlug = (options.slug as string) || '';
   isReturningFromResult = options.fromResult === 'true';
   
   initPage();
@@ -166,14 +168,14 @@ const initPage = async () => {
 
 const loadScenarioData = async () => {
   try {
-    const data = await get(`/scenarios/${scenarioSlug}`, undefined, false);
+    const data = await get<Scenario>(`/scenarios/${scenarioSlug}`, undefined, false);
     scenarioStore.setCurrentScenario(data);
     
     if (data.inputSchema && data.inputSchema.fields) {
       formFields.value = data.inputSchema.fields;
       
       // 初始化表单数据
-      formFields.value.forEach((field: any) => {
+      formFields.value.forEach((field) => {
         if (!formData.value[field.name]) {
           formData.value[field.name] = '';
         }
@@ -187,29 +189,28 @@ const loadScenarioData = async () => {
     if (!selectedToneStyle.value) {
       selectedToneStyle.value = defaultToneStyle.value;
     }
-  } catch (error: any) {
-    showError(error.message || '加载场景失败');
+  } catch (error) {
+    showError((error as Error).message || '加载场景失败');
   }
 };
 
 const loadToneStyles = async () => {
   try {
-    const data = await get('/tone-styles', undefined, false);
+    const data = await get<ToneStyle[]>('/tone-styles', undefined, false);
     toneStyles.value = data;
   } catch (error) {
     console.error('加载情绪风格失败:', error);
-    // 使用默认风格列表
-    toneStyles.value = [
-      { id: '1', name: '热情洋溢', slug: 'ENTHUSIASTIC', description: '充满活力和激情' },
-      { id: '2', name: '专业严谨', slug: 'PROFESSIONAL', description: '正式、专业、可信' },
-      { id: '3', name: '轻松幽默', slug: 'HUMOROUS', description: '风趣幽默、轻松愉快' },
-      { id: '4', name: '温柔亲和', slug: 'GENTLE', description: '温暖、亲切、有同理心' },
-      { id: '5', name: '简洁直接', slug: 'CONCISE', description: '直截了当、简明扼要' },
-    ];
+    // 使用默认风格列表（从常量中获取名称）
+    toneStyles.value = Object.entries(TONE_STYLE_LABELS).map(([slug, name], index) => ({
+      id: String(index + 1),
+      name,
+      slug,
+      description: `${name}风格`,
+    }));
   }
 };
 
-const handlePickerChange = (e: any, fieldName: string) => {
+const handlePickerChange = (e: { detail: { value: number } }, fieldName: string) => {
   const index = e.detail.value;
   const field = formFields.value.find(f => f.name === fieldName);
   if (field && field.options) {
@@ -257,9 +258,9 @@ const handleGenerate = async () => {
     } else {
       throw new Error('生成失败');
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('生成文案失败:', error);
-    showLongToast(error.message || '生成失败，请重试');
+    showLongToast((error as Error).message || '生成失败，请重试');
   } finally {
     generating.value = false;
   }

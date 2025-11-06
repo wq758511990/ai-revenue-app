@@ -3,42 +3,8 @@
  * 用户反馈相关的API接口
  */
 
+import type { Feedback, FeedbackListResponse, FeedbackStats, FeedbackStatus, FeedbackType } from '@/types';
 import { request } from '@/utils/request';
-
-export type FeedbackType = 'NEW_TONE' | 'NEW_SCENARIO' | 'FEATURE_REQUEST' | 'BUG_REPORT';
-export type FeedbackStatus = 'SUBMITTED' | 'IN_PROGRESS' | 'ADOPTED' | 'REPLIED' | 'CLOSED';
-
-export interface Feedback {
-  id: string;
-  userId: string;
-  feedbackType: FeedbackType;
-  content: string;
-  status: FeedbackStatus;
-  adminReply?: string;
-  repliedAt?: string;
-  repliedBy?: string;
-  priority: number;
-  createdAt: string;
-  updatedAt: string;
-  user?: {
-    nickname?: string;
-    avatarUrl?: string;
-  };
-}
-
-export interface FeedbackListResponse {
-  feedbacks: Feedback[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-export interface FeedbackStats {
-  total: number;
-  byType: Record<string, number>;
-  byStatus: Record<string, number>;
-}
 
 /**
  * 提交反馈

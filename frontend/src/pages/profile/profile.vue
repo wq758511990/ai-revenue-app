@@ -59,11 +59,16 @@
             {{ quotaStore.dailyRemaining }}
           </text>
           <view class="stat-label-row">
-          <text class="stat-label">
-            今日剩余
-          </text>
-            <view class="refresh-btn" @click.stop="refreshQuota">
-              <text class="refresh-icon">🔄</text>
+            <text class="stat-label">
+              今日剩余
+            </text>
+            <view
+              class="refresh-btn"
+              @click.stop="refreshQuota"
+            >
+              <text class="refresh-icon">
+                🔄
+              </text>
             </view>
           </view>
         </view>
@@ -79,75 +84,7 @@
       </view>
 
       <!-- 功能菜单 -->
-      <view class="menu-section">
-        <view
-          class="menu-item"
-          @click="goToMembership"
-        >
-          <view class="menu-left">
-            <text class="menu-icon">
-              👑
-            </text>
-            <text class="menu-label">
-              会员中心
-            </text>
-          </view>
-          <text class="menu-arrow">
-            ›
-          </text>
-        </view>
-
-        <view
-          class="menu-item"
-          @click="goToOrders"
-        >
-          <view class="menu-left">
-            <text class="menu-icon">
-              📋
-            </text>
-            <text class="menu-label">
-              我的订单
-            </text>
-          </view>
-          <text class="menu-arrow">
-            ›
-          </text>
-        </view>
-
-        <view
-          class="menu-item"
-          @click="goToHistory"
-        >
-          <view class="menu-left">
-            <text class="menu-icon">
-              📝
-            </text>
-            <text class="menu-label">
-              生成历史
-            </text>
-          </view>
-          <text class="menu-arrow">
-            ›
-          </text>
-        </view>
-
-        <view
-          class="menu-item"
-          @click="goToFeedback"
-        >
-          <view class="menu-left">
-            <text class="menu-icon">
-              💬
-            </text>
-            <text class="menu-label">
-              意见反馈
-            </text>
-          </view>
-          <text class="menu-arrow">
-            ›
-          </text>
-        </view>
-      </view>
+      <MenuList :items="menuItems" />
 
       <!-- 会员信息 -->
       <view
@@ -182,6 +119,7 @@
 </template>
 
 <script setup lang="ts">
+import MenuList, { type MenuItem } from '@/components/MenuList.vue';
 import { useQuotaStore } from '@/stores/quota';
 import { useUserStore } from '@/stores/user';
 import { computed, onMounted } from 'vue';
@@ -238,6 +176,15 @@ const membershipExpireDate = computed(() => {
   return date.toLocaleDateString('zh-CN');
 });
 
+// 菜单配置
+const menuItems = computed<MenuItem[]>(() => [
+  // 会员中心和我的订单临时隐藏（支付功能开发中）
+  // { id: 'membership', icon: '👑', label: '会员中心', onClick: goToMembership },
+  // { id: 'orders', icon: '📋', label: '我的订单', onClick: goToOrders },
+  { id: 'history', icon: '📝', label: '生成历史', onClick: goToHistory },
+  { id: 'feedback', icon: '💬', label: '意见反馈', onClick: goToFeedback },
+]);
+
 // 方法
 const goToMembership = () => {
   uni.navigateTo({
@@ -245,12 +192,13 @@ const goToMembership = () => {
   });
 };
 
-const goToOrders = () => {
-  uni.showToast({
-    title: '功能开发中',
-    icon: 'none',
-  });
-};
+// 临时隐藏（支付功能开发中）
+// const goToOrders = () => {
+//   uni.showToast({
+//     title: '功能开发中',
+//     icon: 'none',
+//   });
+// };
 
 const goToHistory = () => {
   uni.navigateTo({
@@ -274,7 +222,7 @@ const handleLogin = async () => {
     
     if (loginRes.code) {
       // 登录获取token
-      const result = await userStore.login(loginRes.code);
+      await userStore.login(loginRes.code);
       
       uni.hideLoading();
       uni.showToast({
@@ -291,11 +239,11 @@ const handleLogin = async () => {
         icon: 'none',
       });
     }
-  } catch (error: any) {
+  } catch (error) {
     uni.hideLoading();
     console.error('登录失败:', error);
     uni.showToast({
-      title: error.message || '登录失败',
+      title: (error as Error).message || '登录失败',
       icon: 'none',
     });
   }
@@ -321,7 +269,7 @@ const refreshQuota = async () => {
       icon: 'success',
       duration: 1500,
     });
-  } catch (error: any) {
+  } catch (error) {
     uni.hideLoading();
     uni.showToast({
       title: '刷新失败',
@@ -475,51 +423,6 @@ onMounted(() => {
   width: 2rpx;
   height: 64rpx;
   background: #e0e0e0;
-}
-
-/* 功能菜单 */
-.menu-section {
-  background: #ffffff;
-  border-radius: 16rpx;
-  overflow: hidden;
-  margin-bottom: 24rpx;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 32rpx;
-  border-bottom: 2rpx solid #f5f5f5;
-  transition: background 0.2s ease;
-}
-
-.menu-item:last-child {
-  border-bottom: none;
-}
-
-.menu-item:active {
-  background: #f5f5f5;
-}
-
-.menu-left {
-  display: flex;
-  align-items: center;
-}
-
-.menu-icon {
-  font-size: 40rpx;
-  margin-right: 24rpx;
-}
-
-.menu-label {
-  font-size: 28rpx;
-  color: #333;
-}
-
-.menu-arrow {
-  font-size: 48rpx;
-  color: #ccc;
 }
 
 /* 会员信息 */

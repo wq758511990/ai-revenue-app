@@ -1,17 +1,5 @@
 import { post, get, put } from '@/utils/request';
-
-export interface GenerateRequest {
-  scenarioSlug: string;
-  toneStyleSlug: string;
-  userInput: Record<string, any>;
-}
-
-export interface GenerateResponse {
-  id: string;
-  content: string;
-  provider: string;
-  generationTime: number;
-}
+import type { GenerateRequest, GenerateResponse, HistoryResponse, HistoryStats, ContentRecord } from '@/types';
 
 export const apiContent = {
   /**
@@ -24,36 +12,36 @@ export const apiContent = {
   /**
    * 获取历史记录
    */
-  getHistory(page = 1, pageSize = 20): Promise<any> {
-    return get('/content/history', { page, pageSize });
+  getHistory(page = 1, pageSize = 20): Promise<HistoryResponse> {
+    return get<HistoryResponse>('/content/history', { page, pageSize });
   },
 
   /**
    * 获取单条记录
    */
-  getById(id: string): Promise<any> {
-    return get(`/content/${id}`);
+  getById(id: string): Promise<ContentRecord> {
+    return get<ContentRecord>(`/content/${id}`);
   },
 
   /**
    * 编辑文案
    */
-  editContent(id: string, editedContent: string): Promise<any> {
-    return put(`/content/${id}/edit`, { editedContent });
+  editContent(id: string, editedContent: string): Promise<ContentRecord> {
+    return put<ContentRecord>(`/content/${id}/edit`, { editedContent });
   },
 
   /**
    * 获取"再次使用"数据
    */
-  getReuseData(id: string): Promise<any> {
+  getReuseData(id: string): Promise<{ scenarioSlug: string; toneStyle: string; userInput: Record<string, string> }> {
     return get(`/content/${id}/reuse`);
   },
 
   /**
    * 获取用户历史统计
    */
-  getUserStats(): Promise<any> {
-    return get('/content/stats');
+  getUserStats(): Promise<HistoryStats> {
+    return get<HistoryStats>('/content/stats');
   },
 };
 

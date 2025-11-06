@@ -93,12 +93,8 @@ import { apiContent } from '@/api/content';
 import { copyToClipboard } from '@/utils/clipboard';
 import { showError, showToast } from '@/utils/toast';
 import { formatRelativeTime } from '@/utils/time';
-import { 
-  DEFAULT_PAGE_SIZE, 
-  MAX_CONTENT_LENGTH,
-  TONE_STYLE_NAMES,
-  TONE_STYLE_COLORS 
-} from '@/constants/ui.constants';
+import { DEFAULT_PAGE_SIZE, MAX_CONTENT_LENGTH } from '@/constants/ui.constants';
+import { getToneStyleLabel, getToneStyleColor } from '@/constants/tone-style.constants';
 
 interface ContentRecord {
   id: string;
@@ -226,15 +222,8 @@ const getDisplayContent = (record: ContentRecord) => {
     : record.generatedContent;
 };
 
-// 获取情绪风格名称
-const getToneStyleName = (toneStyle: string) => {
-  return TONE_STYLE_NAMES[toneStyle] || toneStyle;
-};
-
-// 获取情绪风格颜色
-const getToneStyleColor = (toneStyle: string) => {
-  return TONE_STYLE_COLORS[toneStyle] || TONE_STYLE_COLORS.ENTHUSIASTIC;
-};
+// 获取情绪风格名称（使用统一的工具函数）
+const getToneStyleName = getToneStyleLabel;
 
 // 格式化时间（使用工具函数）
 const formatTime = (dateString: string) => {

@@ -1,17 +1,7 @@
+import type { Scenario } from '@/types';
+import { get } from '@/utils/request';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { get } from '@/utils/request';
-
-export interface Scenario {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  icon: string;
-  platform: string;
-  inputSchema: any;
-  defaultToneStyle: string;
-}
 
 export const useScenarioStore = defineStore('scenario', () => {
   const scenarios = ref<Scenario[]>([]);

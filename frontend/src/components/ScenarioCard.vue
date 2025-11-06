@@ -20,6 +20,8 @@
 </template>
 
 <script setup lang="ts">
+import { getToneStyleLabel } from '@/constants/tone-style.constants';
+
 interface Scenario {
   id: string;
   name: string;
@@ -39,19 +41,6 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
   (e: 'click', scenario: Scenario): void;
 }>();
-
-// 情绪风格标签映射
-const toneStyleLabels: Record<string, string> = {
-  ENTHUSIASTIC: '热情洋溢',
-  PROFESSIONAL: '专业严谨',
-  HUMOROUS: '轻松幽默',
-  GENTLE: '温柔亲和',
-  CONCISE: '简洁直接',
-};
-
-const getToneStyleLabel = (slug: string): string => {
-  return toneStyleLabels[slug] || slug;
-};
 
 const handleClick = () => {
   emit('click', props.scenario);

@@ -33,7 +33,7 @@
         class="quota-detail"
       >
         <text class="detail-text">
-          每日: {{ quotaStore.dailyRemaining }}/{{ quotaStore.quotaInfo.dailyLimit }}
+          每日: {{ quotaStore.dailyRemaining }}/{{ quotaStore.quotaInfo.dailyQuota }}
         </text>
         <text
           v-if="quotaStore.quotaInfo.purchasedQuota > 0"
