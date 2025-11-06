@@ -57,6 +57,8 @@ export const formatDateTime = (dateString: string, format: string = 'YYYY-MM-DD 
   const minute = String(date.getMinutes()).padStart(2, '0');
   const second = String(date.getSeconds()).padStart(2, '0');
 
+  console.log(format, year, month, day, hour, minute, second);
+
   return format
     .replace('YYYY', String(year))
     .replace('MM', month)
