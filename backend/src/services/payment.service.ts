@@ -1,6 +1,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import { config } from '../config';
+import { APP_NAME } from '../constants/app.constants';
 import logger from '../utils/logger';
 import { orderService } from './order.service';
 
@@ -304,9 +305,9 @@ export class PaymentService {
         MONTHLY: '月度会员',
         YEARLY: '年度会员',
       };
-      return `AI文案助手-${membershipNames[order.membershipType || 'MONTHLY']}`;
+      return `${APP_NAME}-${membershipNames[order.membershipType || 'MONTHLY']}`;
     } else {
-      return `AI文案助手-购买${order.quantity}次`;
+      return `${APP_NAME}-购买${order.quantity}次`;
     }
   }
 

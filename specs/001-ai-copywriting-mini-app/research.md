@@ -745,7 +745,7 @@ async function handleGenerate() {
   "pages": [
     {
       "path": "pages/index/index",
-      "style": { "navigationBarTitleText": "AI文案助手" }
+      "style": { "navigationBarTitleText": "灵眸ai文案" }
     },
     {
       "path": "pages/generate/generate",

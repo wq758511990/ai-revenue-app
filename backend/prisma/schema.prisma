@@ -1,4 +1,4 @@
-// Prisma Schema for AI智能文案助手
+// Prisma Schema for 灵眸ai文案
 
 generator client {
   provider      = "prisma-client-js"

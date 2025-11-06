@@ -3,7 +3,7 @@
     {
       "path": "pages/index/index",
       "style": {
-        "navigationBarTitleText": "AI文案助手",
+        "navigationBarTitleText": "灵眸ai文案",
         "enablePullDownRefresh": false
       }
     },
@@ -67,7 +67,7 @@
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "AI文案助手",
+    "navigationBarTitleText": "灵眸ai文案",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8"
   },

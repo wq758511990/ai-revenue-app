@@ -12,7 +12,7 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}🚀 开始部署 AI 文案助手...${NC}"
+echo -e "${GREEN}🚀 开始部署灵眸ai文案...${NC}"
 echo ""
 
 # 项目目录

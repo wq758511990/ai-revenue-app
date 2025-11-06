@@ -1,7 +1,7 @@
 {
   "name": "ai-copywriting-backend",
   "version": "1.0.0",
-  "description": "AI智能文案助手小程序后端服务",
+  "description": "灵眸ai文案小程序后端服务",
   "main": "dist/app.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",

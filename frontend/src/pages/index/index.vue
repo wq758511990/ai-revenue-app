@@ -2,8 +2,8 @@
   <view class="index-page">
     <!-- 头部 -->
     <view class="header">
-      <text class="title">AI文案助手</text>
-      <text class="subtitle">12种场景，5种风格，一键生成专业文案</text>
+      <text class="title">{{ APP_NAME }}</text>
+      <text class="subtitle">{{ APP_CONFIG.description }}</text>
     </view>
 
     <!-- 搜索栏 -->
@@ -65,6 +65,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useScenarioStore } from '@/stores/scenario';
 import ScenarioCard from '@/components/ScenarioCard.vue';
 import Loading from '@/components/Loading.vue';
+import { APP_NAME, APP_CONFIG } from '@/constants/app.constants';
 
 const scenarioStore = useScenarioStore();
 
