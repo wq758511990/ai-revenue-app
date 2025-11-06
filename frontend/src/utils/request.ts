@@ -4,15 +4,10 @@
 
 import { REQUEST_TIMEOUT } from '@/constants/ui.constants';
 
-// 开发环境API配置
-// 真机调试时，将 localhost 改为你电脑的局域网IP（如：http://10.172.110.154:3000/v1）
-// 开发者工具调试时，使用 localhost 即可
-const DEV_API_URL = 'http://localhost:3000/v1'; // 开发者工具用
-// const DEV_API_URL = 'http://10.172.110.154:3000/v1'; // 真机调试用（取消注释并修改为你的IP）
-
-const BASE_URL = process.env.NODE_ENV === 'development' 
-  ? DEV_API_URL
-  : 'https://your-production-api.com/v1';
+// API 基础地址 - 通过环境变量配置
+// 开发环境: 在 .env.development 中配置
+// 生产环境: 在 .env.production 中配置
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export interface RequestOptions {
   url: string;
@@ -55,7 +50,7 @@ export const request = <T = any>(options: RequestOptions): Promise<T> => {
       timeout: REQUEST_TIMEOUT,
       success: (res: any) => {
         const response = res.data as ApiResponse<T>;
-        
+
         if (response.code === 0) {
           resolve(response.data);
         } else {
@@ -101,4 +96,3 @@ export const del = <T = any>(url: string, data?: any, needAuth = true): Promise<
 };
 
 export default { request, get, post, put, del };
-

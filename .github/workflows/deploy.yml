@@ -5,6 +5,15 @@ on:
     branches:
       - main  # 推送到 main 分支时触发
       - master
+    paths:
+      # 只监听后端相关文件的变化
+      - 'backend/**'
+      - '.github/workflows/**'
+      - 'scripts/**'
+      - 'docs/**'
+      # 如果修改了这些文件也触发
+      - 'SIMPLE_DEPLOY.md'
+      - 'README.md'
   workflow_dispatch:  # 支持手动触发
 
 jobs:
