@@ -165,6 +165,14 @@ export class AuthService {
       grant_type: 'authorization_code',
     };
 
+    // 临时调试日志
+    logger.info('微信登录请求参数', {
+      appid: config.wechat.appId,
+      secretLength: config.wechat.appSecret?.length,
+      hasSecret: !!config.wechat.appSecret,
+      codeLength: code?.length,
+    });
+
     const response = await axios.get<WeChatSessionResponse>(url, { params });
     return response.data;
   }

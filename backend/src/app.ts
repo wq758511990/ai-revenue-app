@@ -12,8 +12,10 @@ const app: Application = express();
 // 中间件
 app.use(helmet()); // 安全头
 app.use(cors()); // 跨域
-app.use(express.json()); // JSON解析
-app.use(express.urlencoded({ extended: true })); // URL编码解析
+// 增加请求体大小限制以支持图片上传（base64）
+// 9张图片 × 2MB × 1.33(base64膨胀) ≈ 24MB，设置为30MB留有余量
+app.use(express.json({ limit: '30mb' })); // JSON解析
+app.use(express.urlencoded({ extended: true, limit: '30mb' })); // URL编码解析
 
 // 请求日志
 app.use((req: Request, _res: Response, next: NextFunction) => {
@@ -36,11 +38,11 @@ app.get('/health', (_req: Request, res: Response) => {
 // 导入路由
 import authRoutes from './routes/auth.routes';
 import contentRoutes from './routes/content.routes';
+import feedbackRoutes from './routes/feedback.routes';
 import paymentRoutes from './routes/payment.routes';
 import scenarioRoutes from './routes/scenario.routes';
 import toneStyleRoutes from './routes/tone-style.routes';
 import userRoutes from './routes/user.routes';
-import feedbackRoutes from './routes/feedback.routes';
 
 // API版本路由
 app.use(`/${config.apiVersion}/auth`, authRoutes);

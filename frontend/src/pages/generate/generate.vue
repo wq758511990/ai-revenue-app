@@ -13,6 +13,16 @@
     </view>
 
     <view class="content">
+      <!-- 图片上传 -->
+      <view class="image-section">
+        <ImageUploader
+          v-model="uploadedImages"
+          label="上传图片"
+          :optional="true"
+          tip="💡 支持 JPG、PNG、GIF 等格式。GIF 动图保持原样，其他格式会自动压缩。"
+        />
+      </view>
+
       <!-- 动态表单 -->
       <view class="form-section">
         <view
@@ -104,6 +114,7 @@
 </template>
 
 <script setup lang="ts">
+import ImageUploader from '@/components/ImageUploader.vue';
 import Loading from '@/components/Loading.vue';
 import ToneSelector from '@/components/ToneSelector.vue';
 import { getToneStyleIcon, TONE_STYLE_LABELS } from '@/constants/tone-style.constants';
@@ -126,6 +137,7 @@ const defaultToneStyle = ref('');
 const generating = ref(false);
 const loading = ref(true);
 const lastGeneratedId = ref('');
+const uploadedImages = ref<string[]>([]); // 图片数组
 
 let scenarioSlug = '';
 let isReturningFromResult = false;
@@ -246,6 +258,7 @@ const handleGenerate = async () => {
       scenarioSlug,
       toneStyle: selectedToneStyle.value,
       userInput: formData.value,
+      images: uploadedImages.value.length > 0 ? uploadedImages.value : undefined,
     });
 
     if (result && result.id) {
@@ -301,6 +314,14 @@ const handleSuggestTone = () => {
 
 .content {
   padding: 32rpx;
+}
+
+.image-section {
+  margin-bottom: 32rpx;
+  padding: 24rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .form-section {

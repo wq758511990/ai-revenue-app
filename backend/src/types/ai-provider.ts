@@ -2,9 +2,20 @@
  * AI Provider接口定义
  */
 
+// 支持文本或多模态内容（图片+文本）
+export type AIMessageContent = 
+  | string 
+  | Array<{
+      type: 'text' | 'image_url';
+      text?: string;
+      image_url?: {
+        url: string; // base64 或 URL
+      };
+    }>;
+
 export interface AIMessage {
   role: 'system' | 'user' | 'assistant';
-  content: string;
+  content: AIMessageContent;
 }
 
 export interface AIGenerateRequest {

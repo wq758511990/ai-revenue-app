@@ -56,6 +56,7 @@ export const config = {
       apiKey: (process.env.SILICONFLOW_API_KEY || '').trim(),
       apiUrl: process.env.SILICONFLOW_API_URL || 'https://api.siliconflow.cn/v1',
       model: process.env.SILICONFLOW_MODEL || 'deepseek-ai/DeepSeek-V2.5',
+      visionModel: process.env.SILICONFLOW_VISION_MODEL || 'Qwen/Qwen2.5-VL-32B-Instruct',
     },
     groq: {
       apiKey: (process.env.GROQ_API_KEY || '').trim(),

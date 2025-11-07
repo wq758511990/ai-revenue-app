@@ -8,6 +8,7 @@ import logger from '../utils/logger';
 import aiService from './ai.service';
 import analyticsService from './analytics.service';
 import contentRecordService from './content-record.service';
+import imageRecognitionService from './image-recognition.service';
 import quotaService from './quota.service';
 import scenarioService from './scenario.service';
 import securityService from './security.service';
@@ -20,6 +21,7 @@ export interface GenerateContentRequest {
   scenarioSlug: string;
   userInput: Record<string, any>;
   toneStyle?: string;
+  images?: string[]; // 可选的图片数组（base64格式）
 }
 
 /**
@@ -76,7 +78,7 @@ export class ContentService {
   public async generateContent(
     request: GenerateContentRequest
   ): Promise<GenerateContentResponse> {
-    const { userId, scenarioSlug, userInput, toneStyle } = request;
+    const { userId, scenarioSlug, userInput, toneStyle, images } = request;
 
     try {
       // 1. 检查并扣减配额
@@ -99,22 +101,46 @@ export class ContentService {
       // 2. 获取场景配置（现在 service 会在找不到时抛出错误）
       const scenario = await scenarioService.getScenarioBySlug(scenarioSlug);
 
-      // 3. 验证用户输入
+      // 3. 如果有图片，先进行图片识别
+      let imageDescription = '';
+      if (images && images.length > 0) {
+        logger.info(`用户 ${userId} 上传了 ${images.length} 张图片，开始识别`);
+        
+        const recognitionResult = await imageRecognitionService.recognizeImages({
+          images,
+        });
+
+        if (!recognitionResult.success) {
+          return this.handleFailureWithRefund(userId, recognitionResult.error || '图片识别失败');
+        }
+
+        imageDescription = recognitionResult.combinedDescription;
+        logger.info(`图片识别成功`, {
+          userId,
+          imageCount: images.length,
+          descriptionLength: imageDescription.length,
+        });
+      }
+
+      // 4. 验证用户输入
       const validationError = this.validateUserInput(userInput, scenario.inputSchema);
       if (validationError) {
         return this.handleFailureWithRefund(userId, validationError);
       }
 
-      // 3. 调用AI生成
+      // 5. 调用AI生成（将图片描述整合到 userInput）
       const finalToneStyle = toneStyle || scenario.defaultToneStyle;
+      const enhancedUserInput = imageDescription
+        ? { ...userInput, imageContext: imageDescription }
+        : userInput;
       
-      logger.info(`用户 ${userId} 开始生成文案 - 场景: ${scenarioSlug}, 风格: ${finalToneStyle}`);
+      logger.info(`用户 ${userId} 开始生成文案 - 场景: ${scenarioSlug}, 风格: ${finalToneStyle}, 是否包含图片: ${!!imageDescription}`);
 
-      // 4. 调用AI生成
+      // 6. 调用AI生成
       const aiResult = await aiService.generateContent({
         scenarioSlug,
         toneStyleSlug: finalToneStyle,
-        userInput,
+        userInput: enhancedUserInput,
         userId,
       });
 
@@ -134,7 +160,7 @@ export class ContentService {
         );
       }
 
-      // 5. 内容安全审核
+      // 7. 内容安全审核
       const securityCheck = await securityService.checkContent(generatedContent);
       if (!securityCheck.safe) {
         logger.warn(`内容审核未通过 - 用户: ${userId}, 原因: ${securityCheck.reason}`);
@@ -142,7 +168,7 @@ export class ContentService {
         return this.handleFailureWithRefund(userId, '生成的内容未通过安全审核');
       }
 
-      // 6. 保存生成记录
+      // 8. 保存生成记录
       const record = await contentRecordService.createRecord({
         userId,
         scenarioId: scenario.id,
@@ -155,7 +181,7 @@ export class ContentService {
 
       logger.info(`文案生成成功 - 记录ID: ${record.id}, 用户: ${userId}`);
 
-      // 7. 记录统计数据
+      // 9. 记录统计数据
       await analyticsService.recordGeneration({
         userId,
         scenarioSlug,

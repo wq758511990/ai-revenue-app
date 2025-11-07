@@ -9,7 +9,7 @@ import { DEFAULT_PAGE_SIZE } from '../constants/pagination.constants';
 export class ContentController {
   /**
    * POST /content/generate
-   * 生成文案
+   * 生成文案（支持图片上传）
    */
   async generate(req: Request, res: Response) {
     try {
@@ -18,18 +18,24 @@ export class ContentController {
         return ResponseUtil.unauthorized(res);
       }
 
-      const { scenarioSlug, toneStyle, userInput } = req.body;
+      const { scenarioSlug, toneStyle, userInput, images } = req.body;
 
       // 验证必填参数
       validateRequired(scenarioSlug, 'scenarioSlug');
       validateRequired(userInput, 'userInput');
 
-      // 调用内容服务生成文案（包含审核流程）
+      // 验证图片数组（如果有）
+      if (images && !Array.isArray(images)) {
+        return ResponseUtil.badRequest(res, '图片格式不正确');
+      }
+
+      // 调用内容服务生成文案（包含图片识别和审核流程）
       const result = await contentService.generateContent({
         userId,
         scenarioSlug,
         userInput,
         toneStyle,
+        images: images || undefined,
       });
 
       if (!result.success) {
