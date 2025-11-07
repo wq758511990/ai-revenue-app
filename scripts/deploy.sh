@@ -41,13 +41,18 @@ echo ""
 echo -e "${YELLOW}🔨 重新构建 Docker 容器...${NC}"
 cd $PROJECT_DIR/backend
 
+# 启用 BuildKit 和 Compose Bake 加速构建
+export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
+export BUILDKIT_PROGRESS=plain
+
 # 检查是否需要完全重新构建（Dockerfile 或 package.json 有变化）
 if git diff HEAD@{1} HEAD --name-only | grep -qE "Dockerfile|package.*\.json|tsconfig\.json"; then
     echo -e "${YELLOW}检测到依赖或构建配置变化，使用 --no-cache 重新构建...${NC}"
-    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache api
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache --parallel api
 else
     echo -e "${YELLOW}使用缓存快速构建...${NC}"
-    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build api
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml build --parallel api
 fi
 
 echo -e "${GREEN}✓ 容器构建完成${NC}"
